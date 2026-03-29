@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>8. Example of Projections Using CHELSA Data</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">8. Example of Projections Using CHELSA
+Data</h1>
+
+
+
+<div id="summary" class="section level1">
+<h1>Summary</h1>
+<ul>
+<li><a href="#description">Description</a></li>
+<li><a href="#getting-ready">Getting ready</a></li>
+<li><a href="#naming-files-for-projections">Naming files for
+projections</a></li>
+<li><a href="#Getting-variables">Getting variables</a>
+<ul>
+<li><a href="#downloading-lgm-variables">Downloading LGM
+variables</a></li>
+<li><a href="#downloading-current-variables">Downloading current
+variables</a></li>
+<li><a href="#subsetting-and-renaming">Subsetting and renaming</a></li>
+</ul></li>
+<li><a href="#organizing-variables">Organizing variables</a></li>
+<li><a href="#data-preparation-for-model-projections">Data preparation
+for model projections</a></li>
+<li><a href="#projecting-models">Projecting models</a></li>
+<li><a href="#detecting-changes-past-vs-present">Detecting changes: Past
+vs present</a></li>
+</ul>
+<hr>
+</div>
+<div id="description" class="section level1">
+<h1>Description</h1>
+<p>In the vignette <a href="model_projections.html">“Project models to
+multiple scenarios”</a>, we show how to project models to multiple
+scenarios at once using future scenarios available in <a href="https://worldclim.org/data/cmip6/cmip6climate.html">WorldClim</a>.
+To organize WorldClim we previously used the function
+(<code>organize_future_worldclim()</code>), and we will need to do
+something similar for data from other databases, for instance, from <a href="https://www.chelsa-climate.org/">CHELSA</a>.</p>
+<p>We need a root directory containing folders representing different
+scenarios, and each of these folders stores raster variables. At the
+first level, inside the root, folders should correspond to distinct time
+periods (e.g., future years like 2070 or past periods such as LGM).
+Within each period folder, if applicable, sub-folders can contain data
+to represent emission scenarios (e.g., ssp126 and ssp585). Finally,
+within each emission scenario or time period folder, a separate folder
+for each General Circulation Model (GCM) should be included (e.g.,
+BCC-CSM2-MR and MIROC6).</p>
+<p>Organizing information this way can be a little tedious, but here we
+will show how to do it. This will make possible to project models using
+scenarios available in different sources. We will use variables from
+CHELSA representing scenarios for the <em>Last Glacial Maximum</em>
+(LGM, ~21,000 year ago).</p>
+<p><br></p>
+<p style="color:red;">
+<strong>WARNING:</strong> In November 2025, CHELSA updated its website
+and LGM variables have not been listed the way they were before. We keep
+this example because the layers are still available to download using
+the code below, and users can still see how the function handles past
+projections. Please be aware that the download links for these variables
+might change in the future, and the code will stop working.
+</p>
+<p><br></p>
+<p><br></p>
+</div>
+<div id="getting-ready" class="section level1">
+<h1>Getting ready</h1>
+<p>At this point it is assumed that <code>kuenm2</code> is installed (if
+not, see the <a href="index.html">Main guide</a>). Load
+<code>kuenm2</code> and any other required packages, and define a
+working directory (if needed).</p>
+<p>Note: functions from other packages (i.e., not from base R or
+<code>kuenm2</code>) used in this guide will be displayed as
+<code>package::function()</code>.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># Load packages</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(kuenm2)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">library</span>(terra)</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="co"># Current directory</span></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="fu">getwd</span>()</span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a><span class="co"># Define new directory</span></span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="co">#setwd(&quot;YOUR/DIRECTORY&quot;)  # uncomment and modify if setting a new directory</span></span></code></pre></div>
+<p><br></p>
+</div>
+<div id="naming-files-for-projections" class="section level1">
+<h1>Naming files for projections</h1>
+<p>To start, climate variables must be saved as separate TIF files, one
+file per scenario. File names should follow a consistent pattern that
+clearly indicates the time period, GCM, and, for future scenarios, the
+emission scenario (SSP). In addition, variables should have the same
+name across all scenarios. For example:</p>
+<ul>
+<li>A file representing past conditions for the “LGM” period using the
+“MIROC6” GCM could be named “Past_LGM_MIROC6.tif”.</li>
+<li>A file representing future conditions for the period “2081–2100”
+under the emission scenario “ssp585” and the GCM “ACCESS-CM2” could be
+named “Future_2081-2100_ssp585_ACCESS-CM2.tif”.</li>
+<li>Variable names in all files representing scenarios must match (e.g.,
+bio1, bio2, etc.). Units in which variables are measured should match
+among all scenarios.</li>
+</ul>
+<p>Let’s see how to achieve this in practice.</p>
+<p><br></p>
+</div>
+<div id="getting-variables" class="section level1">
+<h1>Getting variables</h1>
+<div id="downloading-lgm-variables" class="section level2">
+<h2>Downloading LGM variables</h2>
+<p>The first step is downloading raster layers representing LGM
+conditions. You can download the files directly using the links we
+create below, or following the script.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># Define variables to download</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>var_to_use <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;BIO_01&quot;</span>, <span class="st">&quot;BIO_07&quot;</span>, <span class="st">&quot;BIO_12&quot;</span>, <span class="st">&quot;BIO_15&quot;</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="co"># Define GCMs</span></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>gcms <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;CCSM4&quot;</span>, <span class="st">&quot;CNRM-CM5&quot;</span>, <span class="st">&quot;FGOALS-g2&quot;</span>, <span class="st">&quot;IPSL-CM5A-LR&quot;</span>, <span class="st">&quot;MIROC-ESM&quot;</span>,</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>          <span class="st">&quot;MPI-ESM-P&quot;</span>, <span class="st">&quot;MRI-CGCM3&quot;</span>)</span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a></span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a><span class="co"># Create a grid combining variables and GCMs</span></span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>g <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(<span class="st">&quot;gcm&quot;</span> <span class="ot">=</span> gcms, <span class="st">&quot;var&quot;</span> <span class="ot">=</span> var_to_use)</span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a></span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a><span class="co"># Create links to download</span></span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a>l <span class="ot">&lt;-</span> <span class="fu">do.call</span>(paste, <span class="fu">c</span>(g, <span class="at">sep =</span> <span class="st">&quot;_&quot;</span>))</span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a>l <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">&quot;https://os.zhdk.cloud.switch.ch/chelsav1/pmip3/bioclim/CHELSA_PMIP_&quot;</span>,</span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a>            l, <span class="st">&quot;.tif&quot;</span>)</span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a></span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a><span class="co"># See links</span></span>
+<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a><span class="fu">head</span>(l)</span>
+<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a><span class="co">#&gt; [1] &quot;https://os.zhdk.cloud.switch.ch/chelsav1/pmip3/bioclim/CHELSA_PMIP_CCSM4_BIO_01.tif&quot;       </span></span>
+<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a><span class="co">#&gt; [2] &quot;https://os.zhdk.cloud.switch.ch/chelsav1/pmip3/bioclim/CHELSA_PMIP_CNRM-CM5_BIO_01.tif&quot;    </span></span>
+<span id="cb2-20"><a href="#cb2-20" tabindex="-1"></a><span class="co">#&gt; [3] &quot;https://os.zhdk.cloud.switch.ch/chelsav1/pmip3/bioclim/CHELSA_PMIP_FGOALS-g2_BIO_01.tif&quot;   </span></span>
+<span id="cb2-21"><a href="#cb2-21" tabindex="-1"></a><span class="co">#&gt; [4] &quot;https://os.zhdk.cloud.switch.ch/chelsav1/pmip3/bioclim/CHELSA_PMIP_IPSL-CM5A-LR_BIO_01.tif&quot;</span></span>
+<span id="cb2-22"><a href="#cb2-22" tabindex="-1"></a><span class="co">#&gt; [5] &quot;https://os.zhdk.cloud.switch.ch/chelsav1/pmip3/bioclim/CHELSA_PMIP_MIROC-ESM_BIO_01.tif&quot;   </span></span>
+<span id="cb2-23"><a href="#cb2-23" tabindex="-1"></a><span class="co">#&gt; [6] &quot;https://os.zhdk.cloud.switch.ch/chelsav1/pmip3/bioclim/CHELSA_PMIP_MPI-ESM-P_BIO_01.tif&quot;</span></span>
+<span id="cb2-24"><a href="#cb2-24" tabindex="-1"></a></span>
+<span id="cb2-25"><a href="#cb2-25" tabindex="-1"></a><span class="co"># Create a directory to save the raw variables</span></span>
+<span id="cb2-26"><a href="#cb2-26" tabindex="-1"></a>raw_past_chelsa <span class="ot">&lt;-</span> <span class="fu">file.path</span>(<span class="fu">tempdir</span>(), <span class="st">&quot;Raw_past&quot;</span>)  <span class="co"># Here, in a temporary directory</span></span>
+<span id="cb2-27"><a href="#cb2-27" tabindex="-1"></a><span class="fu">dir.create</span>(raw_past_chelsa)</span>
+<span id="cb2-28"><a href="#cb2-28" tabindex="-1"></a></span>
+<span id="cb2-29"><a href="#cb2-29" tabindex="-1"></a><span class="co"># Download files and save in the Raw_past directory</span></span>
+<span id="cb2-30"><a href="#cb2-30" tabindex="-1"></a><span class="fu">options</span>(<span class="at">timeout =</span> <span class="dv">300</span>)  <span class="co"># To avoid errors with timeout</span></span>
+<span id="cb2-31"><a href="#cb2-31" tabindex="-1"></a><span class="fu">sapply</span>(l, <span class="cf">function</span>(i) {</span>
+<span id="cb2-32"><a href="#cb2-32" tabindex="-1"></a>  downfile <span class="ot">&lt;-</span> <span class="fu">file.path</span>(raw_past_chelsa, <span class="fu">basename</span>(i))</span>
+<span id="cb2-33"><a href="#cb2-33" tabindex="-1"></a>  </span>
+<span id="cb2-34"><a href="#cb2-34" tabindex="-1"></a>  <span class="co"># Download only if the file has not been downloaded yet</span></span>
+<span id="cb2-35"><a href="#cb2-35" tabindex="-1"></a>  <span class="cf">if</span>(<span class="sc">!</span><span class="fu">file.exists</span>(downfile)) {</span>
+<span id="cb2-36"><a href="#cb2-36" tabindex="-1"></a>      <span class="fu">download.file</span>(<span class="at">url =</span> i, <span class="at">destfile =</span> downfile, <span class="at">method =</span> <span class="st">&quot;curl&quot;</span>)</span>
+<span id="cb2-37"><a href="#cb2-37" tabindex="-1"></a>  }</span>
+<span id="cb2-38"><a href="#cb2-38" tabindex="-1"></a>})  <span class="co"># It will take a while</span></span>
+<span id="cb2-39"><a href="#cb2-39" tabindex="-1"></a></span>
+<span id="cb2-40"><a href="#cb2-40" tabindex="-1"></a><span class="co">#Check the files in the Raw_past</span></span>
+<span id="cb2-41"><a href="#cb2-41" tabindex="-1"></a><span class="fu">list.files</span>(raw_past_chelsa)</span>
+<span id="cb2-42"><a href="#cb2-42" tabindex="-1"></a><span class="co">#&gt; [1] &quot;CHELSA_PMIP_CCSM4_BIO_01.tif&quot;        &quot;CHELSA_PMIP_CCSM4_BIO_07.tif&quot;</span></span>
+<span id="cb2-43"><a href="#cb2-43" tabindex="-1"></a><span class="co">#&gt; [3] &quot;CHELSA_PMIP_CCSM4_BIO_12.tif&quot;        &quot;CHELSA_PMIP_CCSM4_BIO_15.tif&quot;</span></span>
+<span id="cb2-44"><a href="#cb2-44" tabindex="-1"></a><span class="co">#&gt; [5] &quot;CHELSA_PMIP_CNRM-CM5_BIO_01.tif&quot;     &quot;CHELSA_PMIP_CNRM-CM5_BIO_07.tif&quot;</span></span>
+<span id="cb2-45"><a href="#cb2-45" tabindex="-1"></a><span class="co">#&gt; [7] &quot;CHELSA_PMIP_CNRM-CM5_BIO_12.tif&quot;     &quot;CHELSA_PMIP_CNRM-CM5_BIO_15.tif&quot;</span></span>
+<span id="cb2-46"><a href="#cb2-46" tabindex="-1"></a><span class="co">#&gt; [9] &quot;CHELSA_PMIP_FGOALS-g2_BIO_01.tif&quot;    &quot;CHELSA_PMIP_FGOALS-g2_BIO_07.tif&quot;</span></span>
+<span id="cb2-47"><a href="#cb2-47" tabindex="-1"></a><span class="co">#&gt; [11] &quot;CHELSA_PMIP_FGOALS-g2_BIO_12.tif&quot;    &quot;CHELSA_PMIP_FGOALS-g2_BIO_15.tif&quot;</span></span>
+<span id="cb2-48"><a href="#cb2-48" tabindex="-1"></a><span class="co">#&gt; [13] &quot;CHELSA_PMIP_IPSL-CM5A-LR_BIO_01.tif&quot; &quot;CHELSA_PMIP_IPSL-CM5A-LR_BIO_07.tif&quot;</span></span>
+<span id="cb2-49"><a href="#cb2-49" tabindex="-1"></a><span class="co">#&gt; [15] &quot;CHELSA_PMIP_IPSL-CM5A-LR_BIO_12.tif&quot; &quot;CHELSA_PMIP_IPSL-CM5A-LR_BIO_15.tif&quot;</span></span>
+<span id="cb2-50"><a href="#cb2-50" tabindex="-1"></a><span class="co">#&gt; [17] &quot;CHELSA_PMIP_MIROC-ESM_BIO_01.tif&quot;    &quot;CHELSA_PMIP_MIROC-ESM_BIO_07.tif&quot;</span></span>
+<span id="cb2-51"><a href="#cb2-51" tabindex="-1"></a><span class="co">#&gt; [19] &quot;CHELSA_PMIP_MIROC-ESM_BIO_12.tif&quot;    &quot;CHELSA_PMIP_MIROC-ESM_BIO_15.tif&quot;</span></span>
+<span id="cb2-52"><a href="#cb2-52" tabindex="-1"></a><span class="co">#&gt; [21] &quot;CHELSA_PMIP_MPI-ESM-P_BIO_01.tif&quot;    &quot;CHELSA_PMIP_MPI-ESM-P_BIO_07.tif&quot;</span></span>
+<span id="cb2-53"><a href="#cb2-53" tabindex="-1"></a><span class="co">#&gt; [23] &quot;CHELSA_PMIP_MPI-ESM-P_BIO_12.tif&quot;    &quot;CHELSA_PMIP_MPI-ESM-P_BIO_15.tif&quot;</span></span>
+<span id="cb2-54"><a href="#cb2-54" tabindex="-1"></a><span class="co">#&gt; [25] &quot;CHELSA_PMIP_MRI-CGCM3_BIO_01.tif&quot;    &quot;CHELSA_PMIP_MRI-CGCM3_BIO_07.tif&quot;</span></span>
+<span id="cb2-55"><a href="#cb2-55" tabindex="-1"></a><span class="co">#&gt; [27] &quot;CHELSA_PMIP_MRI-CGCM3_BIO_12.tif&quot;    &quot;CHELSA_PMIP_MRI-CGCM3_BIO_15.tif&quot;</span></span></code></pre></div>
+<p><br></p>
+</div>
+<div id="downloading-current-variables" class="section level2">
+<h2>Downloading current variables</h2>
+<p>We also need the variables representing current conditions. You can
+download the files directly from <a href="https://www.chelsa-climate.org/datasets">this link</a>, or follow
+the script below:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co"># Create directory to save the variables</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>present_dir <span class="ot">&lt;-</span> <span class="fu">file.path</span>(<span class="fu">tempdir</span>(), <span class="st">&quot;Present_raw&quot;</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="fu">dir.create</span>(present_dir)</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="co"># Define variables to download</span></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>var_present <span class="ot">&lt;-</span>  <span class="fu">c</span>(<span class="st">&quot;bio1&quot;</span>, <span class="st">&quot;bio7&quot;</span>, <span class="st">&quot;bio12&quot;</span>, <span class="st">&quot;bio15&quot;</span>)</span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="co"># Create links, download and save in the Present_raw directory</span></span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>l_present <span class="ot">&lt;-</span> <span class="fu">sapply</span>(var_present, <span class="cf">function</span>(i){</span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a>  <span class="co"># Create link to download</span></span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a>  l_present_i <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">&quot;https://os.zhdk.cloud.switch.ch/chelsav2/GLOBAL/climatologies/1981-2010/bio/CHELSA_&quot;</span>, </span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a>                        i, <span class="st">&quot;_1981-2010_V.2.1.tif&quot;</span>)</span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a>  </span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a>  <span class="co"># Donwload only if the file has not been downloaded yet</span></span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a>  <span class="cf">if</span>(<span class="sc">!</span><span class="fu">file.exists</span>(<span class="fu">file.path</span>(present_dir, <span class="fu">basename</span>(l_present_i))))</span>
+<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a>  <span class="fu">download.file</span>(<span class="at">url =</span> l_present_i,</span>
+<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a>                <span class="at">destfile =</span> <span class="fu">file.path</span>(present_dir, <span class="fu">basename</span>(l_present_i)),</span>
+<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a>                <span class="at">method =</span> <span class="st">&quot;curl&quot;</span>)</span>
+<span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a>})  <span class="co"># This might take a while</span></span>
+<span id="cb3-20"><a href="#cb3-20" tabindex="-1"></a></span>
+<span id="cb3-21"><a href="#cb3-21" tabindex="-1"></a><span class="co"># Check the files in the directory</span></span>
+<span id="cb3-22"><a href="#cb3-22" tabindex="-1"></a><span class="fu">list.files</span>(present_dir)</span>
+<span id="cb3-23"><a href="#cb3-23" tabindex="-1"></a><span class="co">#&gt; [1] &quot;CHELSA_bio1_1981-2010_V.2.1.tif&quot;     &quot;CHELSA_bio12_1981-2010_V.2.1.tif&quot;</span></span>
+<span id="cb3-24"><a href="#cb3-24" tabindex="-1"></a><span class="co">#&gt; [3] &quot;CHELSA_bio15_1981-2010_V.2.1.tif&quot;    &quot;CHELSA_bio7_1981-2010_V.2.1.tif&quot;</span></span></code></pre></div>
+<p><br></p>
+</div>
+<div id="subsetting-and-renaming" class="section level2">
+<h2>Subsetting and renaming</h2>
+<p>After downloading files, we need to combine all variables for each
+scenario in a single TIF file. In general, past scenarios differs only
+in terms of GCM, while future scenarios are also separated according to
+different emission scenarios (i.e., SSP1-26 and SSP5-85) and GCMs.</p>
+<p>First, let’s combine the variables from the present scenario. To
+speed up the analysis in this example, we will also resample the raster
+layers from 30 arc-seconds to 10 arc-minutes, and crop the variables
+using a calibration area (provided as example data with the package). We
+will also rename the variables as follows “bio1”, “bio12”, “bio15”, and
+“bio7”.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># Import are for model calibration (M)</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="fu">vect</span>(<span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;m.gpkg&quot;</span>, </span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>                        <span class="at">package =</span> <span class="st">&quot;kuenm2&quot;</span>))</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="co"># Import present variables</span></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>present_files <span class="ot">&lt;-</span> <span class="fu">list.files</span>(present_dir, <span class="at">full.names =</span> <span class="cn">TRUE</span>)  <span class="co"># List files</span></span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>present_var <span class="ot">&lt;-</span> <span class="fu">rast</span>(present_files)</span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a><span class="co"># Mask variables using the calibration area (m)</span></span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a>present_m <span class="ot">&lt;-</span> <span class="fu">crop</span>(present_var, m, <span class="at">mask =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a></span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a><span class="co"># Check variables names</span></span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a><span class="fu">names</span>(present_m)</span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a><span class="co">#&gt; [1] &quot;CHELSA_bio1_1981-2010_V.2.1&quot;  &quot;CHELSA_bio12_1981-2010_V.2.1&quot;</span></span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a><span class="co">#&gt; [3] &quot;CHELSA_bio15_1981-2010_V.2.1&quot; &quot;CHELSA_bio7_1981-2010_V.2.1&quot;</span></span>
+<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a></span>
+<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a><span class="co"># Rename variables</span></span>
+<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a><span class="fu">names</span>(present_m) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;bio1&quot;</span>, <span class="st">&quot;bio12&quot;</span>, <span class="st">&quot;bio15&quot;</span>, <span class="st">&quot;bio7&quot;</span>)</span>
+<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a><span class="fu">names</span>(present_m)</span>
+<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a><span class="co">#&gt; [1] &quot;bio1&quot;  &quot;bio12&quot; &quot;bio15&quot; &quot;bio7&quot;</span></span>
+<span id="cb4-21"><a href="#cb4-21" tabindex="-1"></a></span>
+<span id="cb4-22"><a href="#cb4-22" tabindex="-1"></a><span class="co"># Check current resolution (30arc-sec)</span></span>
+<span id="cb4-23"><a href="#cb4-23" tabindex="-1"></a><span class="fu">res</span>(present_m)</span>
+<span id="cb4-24"><a href="#cb4-24" tabindex="-1"></a><span class="co">#&gt; [1] 0.008333333 0.008333333</span></span>
+<span id="cb4-25"><a href="#cb4-25" tabindex="-1"></a></span>
+<span id="cb4-26"><a href="#cb4-26" tabindex="-1"></a><span class="co"># Decrease resolution to 10arc-min</span></span>
+<span id="cb4-27"><a href="#cb4-27" tabindex="-1"></a>present_chelsa <span class="ot">&lt;-</span> <span class="fu">aggregate</span>(present_m, <span class="at">fact =</span> <span class="dv">20</span>, <span class="at">fun =</span> <span class="st">&quot;mean&quot;</span>)</span>
+<span id="cb4-28"><a href="#cb4-28" tabindex="-1"></a></span>
+<span id="cb4-29"><a href="#cb4-29" tabindex="-1"></a><span class="co"># Save processed raster</span></span>
+<span id="cb4-30"><a href="#cb4-30" tabindex="-1"></a>dir_current <span class="ot">&lt;-</span> <span class="fu">file.path</span>(<span class="fu">tempdir</span>(), <span class="st">&quot;Current_CHELSA&quot;</span>)</span>
+<span id="cb4-31"><a href="#cb4-31" tabindex="-1"></a><span class="fu">dir.create</span>(dir_current)</span>
+<span id="cb4-32"><a href="#cb4-32" tabindex="-1"></a></span>
+<span id="cb4-33"><a href="#cb4-33" tabindex="-1"></a><span class="fu">writeRaster</span>(present_chelsa, </span>
+<span id="cb4-34"><a href="#cb4-34" tabindex="-1"></a>            <span class="at">filename =</span> <span class="fu">file.path</span>(dir_current, <span class="st">&quot;Current_CHELSA.tif&quot;</span>))</span></code></pre></div>
+<p><br></p>
+<p>Now, let’s do the same with variables representing LGM
+conditions:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co"># Import LGM variables</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>lgm_files <span class="ot">&lt;-</span> <span class="fu">list.files</span>(raw_past_chelsa, <span class="at">full.names =</span> <span class="cn">TRUE</span>)  <span class="co"># List files</span></span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>lgm_var <span class="ot">&lt;-</span> <span class="fu">rast</span>(lgm_files)</span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a><span class="co"># Mask variables using the calibration area (m)</span></span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>lgm_m <span class="ot">&lt;-</span> <span class="fu">crop</span>(lgm_var, m, <span class="at">mask =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a></span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a><span class="co"># Decrease resolution to 10arc-min</span></span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a>lgm_chelsa <span class="ot">&lt;-</span> <span class="fu">aggregate</span>(lgm_m, <span class="at">fact =</span> <span class="dv">20</span>, <span class="at">fun =</span> <span class="st">&quot;mean&quot;</span>)</span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a></span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a><span class="co"># Check variables names</span></span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a><span class="fu">names</span>(lgm_chelsa)</span>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a><span class="co">#&gt;  [1] &quot;CHELSA_PMIP_CCSM4_BIO_01&quot;        &quot;CHELSA_PMIP_CCSM4_BIO_07&quot;       </span></span>
+<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a><span class="co">#&gt;  [3] &quot;CHELSA_PMIP_CCSM4_BIO_12&quot;        &quot;CHELSA_PMIP_CCSM4_BIO_15&quot;       </span></span>
+<span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a><span class="co">#&gt;  [5] &quot;CHELSA_PMIP_CNRM-CM5_BIO_01&quot;     &quot;CHELSA_PMIP_CNRM-CM5_BIO_07&quot;    </span></span>
+<span id="cb5-16"><a href="#cb5-16" tabindex="-1"></a><span class="co">#&gt;  [7] &quot;CHELSA_PMIP_CNRM-CM5_BIO_12&quot;     &quot;CHELSA_PMIP_CNRM-CM5_BIO_15&quot;    </span></span>
+<span id="cb5-17"><a href="#cb5-17" tabindex="-1"></a><span class="co">#&gt;  [9] &quot;CHELSA_PMIP_FGOALS-g2_BIO_01&quot;    &quot;CHELSA_PMIP_FGOALS-g2_BIO_07&quot;   </span></span>
+<span id="cb5-18"><a href="#cb5-18" tabindex="-1"></a><span class="co">#&gt; [11] &quot;CHELSA_PMIP_FGOALS-g2_BIO_12&quot;    &quot;CHELSA_PMIP_FGOALS-g2_BIO_15&quot;   </span></span>
+<span id="cb5-19"><a href="#cb5-19" tabindex="-1"></a><span class="co">#&gt; [13] &quot;CHELSA_PMIP_IPSL-CM5A-LR_BIO_01&quot; &quot;CHELSA_PMIP_IPSL-CM5A-LR_BIO_07&quot;</span></span>
+<span id="cb5-20"><a href="#cb5-20" tabindex="-1"></a><span class="co">#&gt; [15] &quot;CHELSA_PMIP_IPSL-CM5A-LR_BIO_12&quot; &quot;CHELSA_PMIP_IPSL-CM5A-LR_BIO_15&quot;</span></span>
+<span id="cb5-21"><a href="#cb5-21" tabindex="-1"></a><span class="co">#&gt; [17] &quot;CHELSA_PMIP_MIROC-ESM_BIO_01&quot;    &quot;CHELSA_PMIP_MIROC-ESM_BIO_07&quot;   </span></span>
+<span id="cb5-22"><a href="#cb5-22" tabindex="-1"></a><span class="co">#&gt; [19] &quot;CHELSA_PMIP_MIROC-ESM_BIO_12&quot;    &quot;CHELSA_PMIP_MIROC-ESM_BIO_15&quot;   </span></span>
+<span id="cb5-23"><a href="#cb5-23" tabindex="-1"></a><span class="co">#&gt; [21] &quot;CHELSA_PMIP_MPI-ESM-P_BIO_01&quot;    &quot;CHELSA_PMIP_MPI-ESM-P_BIO_07&quot;   </span></span>
+<span id="cb5-24"><a href="#cb5-24" tabindex="-1"></a><span class="co">#&gt; [23] &quot;CHELSA_PMIP_MPI-ESM-P_BIO_12&quot;    &quot;CHELSA_PMIP_MPI-ESM-P_BIO_15&quot;   </span></span>
+<span id="cb5-25"><a href="#cb5-25" tabindex="-1"></a><span class="co">#&gt; [25] &quot;CHELSA_PMIP_MRI-CGCM3_BIO_01&quot;    &quot;CHELSA_PMIP_MRI-CGCM3_BIO_07&quot;   </span></span>
+<span id="cb5-26"><a href="#cb5-26" tabindex="-1"></a><span class="co">#&gt; [27] &quot;CHELSA_PMIP_MRI-CGCM3_BIO_12&quot;    &quot;CHELSA_PMIP_MRI-CGCM3_BIO_15&quot;</span></span></code></pre></div>
+<p><br></p>
+<p>Note that file names contain the information on the GCM. The trick
+here is using these patterns for grouping the variables:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co"># In each iteration, &#39;i&#39; is a GCM</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>lgm_by_gcm <span class="ot">&lt;-</span> <span class="fu">lapply</span>(gcms, <span class="cf">function</span>(i){</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>  <span class="co"># Subset variables that belong to GCM i</span></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>  lgm_gcm_i <span class="ot">&lt;-</span> lgm_chelsa[[<span class="fu">grepl</span>(i, <span class="fu">names</span>(lgm_chelsa))]]</span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>  </span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>  <span class="co"># Rename variables</span></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>  <span class="fu">names</span>(lgm_gcm_i) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;bio1&quot;</span>, <span class="st">&quot;bio7&quot;</span>, <span class="st">&quot;bio12&quot;</span>, <span class="st">&quot;bio15&quot;</span>)</span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a>  <span class="fu">return</span>(lgm_gcm_i)</span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a>})</span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a></span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a><span class="fu">names</span>(lgm_by_gcm) <span class="ot">&lt;-</span> gcms</span></code></pre></div>
+<p><br></p>
+<p>One important thing to note is that variables from LGM have different
+units compared to the current ones. In the current time, bio_1 have
+values in ºC, while in the LGM it has values in K * 10. bio_7 have
+values in ºC in the current time and in ºC * 10 in LGM. The current
+precipitation variables are in millimeters (mm) or percentage of
+variation (bio_15), while in the LGM they are in mm * 10 or % * 10.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co"># Check values of variables in present</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="co">#&gt; minmax(present_chelsa[[c(&quot;bio1&quot;, &quot;bio7&quot;, &quot;bio12&quot;, &quot;bio15&quot;)]])</span></span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="co">#&gt;         bio1     bio7    bio12    bio15</span></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a><span class="co">#&gt; min 12.87700 10.11300 1211.605 10.32925</span></span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a><span class="co">#&gt; max 24.70025 21.06125 3063.049 70.45125</span></span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a><span class="co"># Check values of variables in LGM (CCSM4)</span></span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a><span class="fu">minmax</span>(lgm_by_gcm<span class="sc">$</span>CCSM4)</span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a><span class="co">#&gt;         bio1     bio7    bio12    bio15</span></span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a><span class="co">#&gt; min 2822.425 173.5125 10710.62  86.9125</span></span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a><span class="co">#&gt; max 2946.758 219.7700 23159.20 659.0025</span></span></code></pre></div>
+<p><br></p>
+<p>We need to convert these variables so they have the same units as the
+current variables:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co"># Fixing units in loop</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>lgm_fixed_units <span class="ot">&lt;-</span> <span class="fu">lapply</span>(lgm_by_gcm, <span class="cf">function</span>(x) {</span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>  x<span class="sc">$</span>bio1 <span class="ot">&lt;-</span> (x<span class="sc">$</span>bio1 <span class="sc">/</span> <span class="dv">10</span>) <span class="sc">-</span> <span class="dv">273</span>  <span class="co"># Divide by 10 and subtracts -273</span></span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>  x<span class="sc">$</span>bio7 <span class="ot">&lt;-</span> x<span class="sc">$</span>bio7 <span class="sc">/</span> <span class="dv">10</span>  <span class="co"># Divide by 10</span></span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>  x<span class="sc">$</span>bio12 <span class="ot">&lt;-</span> x<span class="sc">$</span>bio12 <span class="sc">/</span> <span class="dv">10</span>  <span class="co"># Divide by 10</span></span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>  x<span class="sc">$</span>bio15 <span class="ot">&lt;-</span> x<span class="sc">$</span>bio15 <span class="sc">/</span> <span class="dv">10</span>  <span class="co"># Divide by 10</span></span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a>  <span class="fu">return</span>(x)</span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a>})</span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a></span>
+<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a><span class="co"># Check units</span></span>
+<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a><span class="fu">minmax</span>(lgm_fixed_units<span class="sc">$</span>CCSM4)</span>
+<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a><span class="co">#&gt;         bio1     bio7    bio12    bio15</span></span>
+<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a><span class="co">#&gt; min  9.24250 17.35125 1071.062  8.69125</span></span>
+<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a><span class="co">#&gt; max 21.67575 21.97700 2315.920 65.90025</span></span></code></pre></div>
+<p><br></p>
+<p>Now that we have the variables for LGM grouped by GCMs, with names
+and units fixed accordingly, we can write the files to disk. Remember
+that file names must include the time period (LGM) and the GCM of each
+scenario:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="co"># Create directory to save processed lgm variables</span></span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>dir_lgm <span class="ot">&lt;-</span> <span class="fu">file.path</span>(<span class="fu">tempdir</span>(), <span class="st">&quot;LGM_CHELSA&quot;</span>)</span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a><span class="fu">dir.create</span>(dir_lgm)</span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a></span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a><span class="co"># Processing in loop</span></span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a><span class="fu">lapply</span>(<span class="fu">names</span>(lgm_fixed_units), <span class="cf">function</span>(i) {</span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a>  <span class="co"># Subset SpatRaster from GCM i</span></span>
+<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a>  r_i <span class="ot">&lt;-</span> lgm_fixed_units[[i]]</span>
+<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a>  </span>
+<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a>  <span class="co"># Name the file with the Period (LGM) and GCM (i)</span></span>
+<span id="cb9-11"><a href="#cb9-11" tabindex="-1"></a>  filename_i <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">&quot;CHELSA_LGM_&quot;</span>, i, <span class="st">&quot;.tif&quot;</span>) </span>
+<span id="cb9-12"><a href="#cb9-12" tabindex="-1"></a>  </span>
+<span id="cb9-13"><a href="#cb9-13" tabindex="-1"></a>  <span class="co"># Write Raster</span></span>
+<span id="cb9-14"><a href="#cb9-14" tabindex="-1"></a>  <span class="fu">writeRaster</span>(r_i, <span class="at">filename =</span> <span class="fu">file.path</span>(dir_lgm, filename_i))</span>
+<span id="cb9-15"><a href="#cb9-15" tabindex="-1"></a>})</span></code></pre></div>
+<p><br></p>
+</div>
+</div>
+<div id="organizing-variables" class="section level1">
+<h1>Organizing variables</h1>
+<p>At this points we have:</p>
+<ul>
+<li>The variables stored as TIF files, one file per scenario.</li>
+<li>The names of files containing patterns to identify the time periods
+and GCMS.</li>
+<li>The variable names (bio1, bio2, etc.) matching across
+scenarios.</li>
+</ul>
+<p>Now, we can use the function <code>organize_for_projection()</code>
+to organize the files in the specific hierarchical manner compatible
+with <code>kuenm2</code>. The function requires:</p>
+<ul>
+<li><code>present_file</code>, <code>past_files</code> and/or
+<code>future_files</code>: character vector with the <em>full path</em>
+to the files for the scenarios of interest. When listing these files, is
+important to set <code>full.names = TRUE</code> in
+<code>list.files()</code>.</li>
+<li><code>past_period</code> and/or <code>future_period</code>:
+character vector specifying the time periods in past and/or future,
+respectively. Examples of past periods are <em>LGM</em> and
+<em>MID</em>. Examples of future periods include <em>2061-2080</em> or
+<em>2100</em>. <em>Remember that period ID needs to be part of file
+names</em>.</li>
+<li><code>past_gcm</code> and/or <code>future_gcm</code>: character
+vector specifying GCMS in past and/or future, respectively. Examples of
+GCMS are <em>CCSM4</em> and <em>FGOALS-g2</em>. <em>Remember that GCMs
+need to be part of file names</em>.</li>
+<li><code>future_pscen</code>: character vector specifying emission
+scenarios in the future. Examples of scenario names are <em>ssp126</em>
+and <em>ssp585</em>. <em>Remember that scenarios need to be part of file
+names</em>.</li>
+<li><code>variables_names</code> or <code>models</code>: a character
+vector with the variable names or a <code>fitted_model</code> object
+(from where the variables used in the model will be extracted).</li>
+</ul>
+<p>The function also allows to use a spatial object
+(<code>SpatVector</code>, <code>SpatRaster</code>, or
+<code>SpatExtent</code>) to mask the variables, and append names of
+static variables (i.e., topographic variables) to the climatic
+variables.</p>
+<p>first step is using <code>list.files(path, full.names = TRUE)</code>
+to list the path to the files representing present and LGM conditions.
+Remember, we save the processed current variables in the
+<code>present_dir</code> directory and the LGM variables in
+<code>dir_lgm</code>:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="co"># Listing files in directories</span></span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>present_list <span class="ot">&lt;-</span> <span class="fu">list.files</span>(<span class="at">path =</span> dir_current, <span class="at">pattern =</span> <span class="st">&quot;Current_CHELSA&quot;</span>,</span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a>                           <span class="at">full.names =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a></span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a>lgm_list <span class="ot">&lt;-</span> <span class="fu">list.files</span>(<span class="at">path =</span> dir_lgm, <span class="at">pattern =</span> <span class="st">&quot;LGM&quot;</span>, <span class="at">full.names =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<p><br></p>
+<p>Let’s check the listed files to ensure they are storing the full path
+to the variables of each scenario:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="co"># Check list of files with full paths</span></span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a><span class="do">## Present</span></span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a>present_list  <span class="co"># Paths can be different in distinct computers</span></span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a><span class="co">#&gt; &quot;Local\\Temp\\Current_CHELSA.tif&quot;</span></span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a></span>
+<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a><span class="co"># Past</span></span>
+<span id="cb11-7"><a href="#cb11-7" tabindex="-1"></a>lgm_list  <span class="co"># Paths can be different in distinct computers</span></span>
+<span id="cb11-8"><a href="#cb11-8" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Local\\Temp\\CHELSA_LGM_CCSM4.tif&quot;       </span></span>
+<span id="cb11-9"><a href="#cb11-9" tabindex="-1"></a><span class="co">#&gt; [2] &quot;Local\\Temp\\CHELSA_LGM_CNRM-CM5.tif&quot;    </span></span>
+<span id="cb11-10"><a href="#cb11-10" tabindex="-1"></a><span class="co">#&gt; [3] &quot;Local\\Temp\\CHELSA_LGM_FGOALS-g2.tif&quot;   </span></span>
+<span id="cb11-11"><a href="#cb11-11" tabindex="-1"></a><span class="co">#&gt; [4] &quot;Local\\Temp\\CHELSA_LGM_IPSL-CM5A-LR.tif&quot;</span></span>
+<span id="cb11-12"><a href="#cb11-12" tabindex="-1"></a><span class="co">#&gt; [5] &quot;Local\\Temp\\CHELSA_LGM_MIROC-ESM.tif&quot;   </span></span>
+<span id="cb11-13"><a href="#cb11-13" tabindex="-1"></a><span class="co">#&gt; [6] &quot;Local\\Temp\\CHELSA_LGM_MPI-ESM-P.tif&quot;   </span></span>
+<span id="cb11-14"><a href="#cb11-14" tabindex="-1"></a><span class="co">#&gt; [7] &quot;Local\\Temp\\CHELSA_LGM_MRI-CGCM3.tif&quot;</span></span></code></pre></div>
+<p><br></p>
+<p>After checking files, we are ready to organize them:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="co"># Create a directory to save the variables</span></span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a><span class="co"># Here, in a temporary directory. Change to your work directory in your computer</span></span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a>out_dir <span class="ot">&lt;-</span> <span class="fu">file.path</span>(<span class="fu">tempdir</span>(), <span class="st">&quot;Projection_variables&quot;</span>)</span>
+<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a></span>
+<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a><span class="co"># Organizing files the way it is needed</span></span>
+<span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a><span class="fu">organize_for_projection</span>(<span class="at">output_dir =</span> out_dir, </span>
+<span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a>                        <span class="at">variable_names =</span> <span class="fu">c</span>(<span class="st">&quot;bio1&quot;</span>, <span class="st">&quot;bio7&quot;</span>, <span class="st">&quot;bio12&quot;</span>, <span class="st">&quot;bio15&quot;</span>), </span>
+<span id="cb12-8"><a href="#cb12-8" tabindex="-1"></a>                        <span class="at">present_file =</span> present_list, </span>
+<span id="cb12-9"><a href="#cb12-9" tabindex="-1"></a>                        <span class="at">past_files =</span> lgm_list, </span>
+<span id="cb12-10"><a href="#cb12-10" tabindex="-1"></a>                        <span class="at">past_period =</span> <span class="st">&quot;LGM&quot;</span>, </span>
+<span id="cb12-11"><a href="#cb12-11" tabindex="-1"></a>                        <span class="at">past_gcm =</span> <span class="fu">c</span>(<span class="st">&quot;CCSM4&quot;</span>, <span class="st">&quot;CNRM-CM5&quot;</span>, <span class="st">&quot;FGOALS-g2&quot;</span>, </span>
+<span id="cb12-12"><a href="#cb12-12" tabindex="-1"></a>                                     <span class="st">&quot;IPSL-CM5A-LR&quot;</span>, <span class="st">&quot;MIROC-ESM&quot;</span>, <span class="st">&quot;MPI-ESM-P&quot;</span>,</span>
+<span id="cb12-13"><a href="#cb12-13" tabindex="-1"></a>                                     <span class="st">&quot;MRI-CGCM3&quot;</span>),</span>
+<span id="cb12-14"><a href="#cb12-14" tabindex="-1"></a>                        <span class="at">resample_to_present =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb12-15"><a href="#cb12-15" tabindex="-1"></a>                        <span class="at">overwrite =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb12-16"><a href="#cb12-16" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb12-17"><a href="#cb12-17" tabindex="-1"></a><span class="co">#&gt; Variables successfully organized in directory:</span></span>
+<span id="cb12-18"><a href="#cb12-18" tabindex="-1"></a><span class="co">#&gt; C:\Users\wever\AppData\Local\Temp\RtmpGMPg46/Projection_variables</span></span></code></pre></div>
+<p><br></p>
+<p>We can check the files structured hierarchically in nested folders
+using the <code>dir_tree()</code> function from the <code>fs</code>
+package:</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="co"># Install package if necessary</span></span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a><span class="cf">if</span>(<span class="sc">!</span><span class="fu">require</span>(<span class="st">&quot;fs&quot;</span>)) {</span>
+<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a>  <span class="fu">install.packages</span>(<span class="st">&quot;fs&quot;</span>)</span>
+<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a>}</span>
+<span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a></span>
+<span id="cb13-6"><a href="#cb13-6" tabindex="-1"></a>fs<span class="sc">::</span><span class="fu">dir_tree</span>(out_dir)</span>
+<span id="cb13-7"><a href="#cb13-7" tabindex="-1"></a><span class="co">#&gt; Local\Temp\Projection_variables</span></span>
+<span id="cb13-8"><a href="#cb13-8" tabindex="-1"></a><span class="co">#&gt; ├── Past</span></span>
+<span id="cb13-9"><a href="#cb13-9" tabindex="-1"></a><span class="co">#&gt; │   └── LGM</span></span>
+<span id="cb13-10"><a href="#cb13-10" tabindex="-1"></a><span class="co">#&gt; │       ├── CCSM4</span></span>
+<span id="cb13-11"><a href="#cb13-11" tabindex="-1"></a><span class="co">#&gt; │       │   └── Variables.tif</span></span>
+<span id="cb13-12"><a href="#cb13-12" tabindex="-1"></a><span class="co">#&gt; │       ├── CNRM-CM5</span></span>
+<span id="cb13-13"><a href="#cb13-13" tabindex="-1"></a><span class="co">#&gt; │       │   └── Variables.tif</span></span>
+<span id="cb13-14"><a href="#cb13-14" tabindex="-1"></a><span class="co">#&gt; │       ├── FGOALS-g2</span></span>
+<span id="cb13-15"><a href="#cb13-15" tabindex="-1"></a><span class="co">#&gt; │       │   └── Variables.tif</span></span>
+<span id="cb13-16"><a href="#cb13-16" tabindex="-1"></a><span class="co">#&gt; │       ├── IPSL-CM5A-LR</span></span>
+<span id="cb13-17"><a href="#cb13-17" tabindex="-1"></a><span class="co">#&gt; │       │   └── Variables.tif</span></span>
+<span id="cb13-18"><a href="#cb13-18" tabindex="-1"></a><span class="co">#&gt; │       ├── MIROC-ESM</span></span>
+<span id="cb13-19"><a href="#cb13-19" tabindex="-1"></a><span class="co">#&gt; │       │   └── Variables.tif</span></span>
+<span id="cb13-20"><a href="#cb13-20" tabindex="-1"></a><span class="co">#&gt; │       ├── MPI-ESM-P</span></span>
+<span id="cb13-21"><a href="#cb13-21" tabindex="-1"></a><span class="co">#&gt; │       │   └── Variables.tif</span></span>
+<span id="cb13-22"><a href="#cb13-22" tabindex="-1"></a><span class="co">#&gt; │       └── MRI-CGCM3</span></span>
+<span id="cb13-23"><a href="#cb13-23" tabindex="-1"></a><span class="co">#&gt; │           └── Variables.tif</span></span>
+<span id="cb13-24"><a href="#cb13-24" tabindex="-1"></a><span class="co">#&gt; └── Present</span></span>
+<span id="cb13-25"><a href="#cb13-25" tabindex="-1"></a><span class="co">#&gt;     └── Variables.tif</span></span></code></pre></div>
+<p><br></p>
+<p>After organizing variables, the next step is to create the
+<code>prepared_projection</code> object.</p>
+<p>But before this, let’s import a <code>fitted_model</code> object
+provided as example data in <code>kuenm2</code>. This object was created
+in a process that used current variables from CHELSA. For more
+information check the vignettes about <a href="prepare_data.html">data
+preparation</a>, <a href="model_calibration.html">model calibration</a>
+and <a href="model_exploration.html">model exploration</a>.</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="co"># Load the object with fitted models</span></span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a><span class="fu">data</span>(fitted_model_chelsa, <span class="at">package =</span> <span class="st">&quot;kuenm2&quot;</span>)</span></code></pre></div>
+<p><br></p>
+</div>
+<div id="data-preparation-for-model-projections" class="section level1">
+<h1>Data preparation for model projections</h1>
+<p>Now, let’s prepare data for model projections to multiple scenarios.
+We need the paths to the folders where the raster files are stored.</p>
+<p>In addition to storing the paths to the variables for each scenario,
+the function verifies if all variables used to fit the final models are
+present across all scenarios. To perform this check, you need to provide
+either the <code>fitted_models</code> object you intend to use for
+projection or simply the variable names. We strongly suggest using the
+<code>fitted_models</code> object to minimize errors.</p>
+<p>We also need to provide information so the function can identify time
+periods, SSPs, and GCMs (no SSPs in this example).</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="co"># Define present_dir and past_dir</span></span>
+<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a>in_dir_present <span class="ot">&lt;-</span> <span class="fu">file.path</span>(out_dir, <span class="st">&quot;Present&quot;</span>)</span>
+<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a>in_dir_past <span class="ot">&lt;-</span> <span class="fu">file.path</span>(out_dir, <span class="st">&quot;Past&quot;</span>)</span>
+<span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a></span>
+<span id="cb15-5"><a href="#cb15-5" tabindex="-1"></a><span class="co"># Prepare projections using fitted models to check variables</span></span>
+<span id="cb15-6"><a href="#cb15-6" tabindex="-1"></a>pr <span class="ot">&lt;-</span> <span class="fu">prepare_projection</span>(<span class="at">models =</span> fitted_model_chelsa,</span>
+<span id="cb15-7"><a href="#cb15-7" tabindex="-1"></a>                         <span class="at">present_dir =</span> in_dir_present,  <span class="co"># Directory with present variables</span></span>
+<span id="cb15-8"><a href="#cb15-8" tabindex="-1"></a>                         <span class="at">past_dir =</span> in_dir_past, </span>
+<span id="cb15-9"><a href="#cb15-9" tabindex="-1"></a>                         <span class="at">past_period =</span> <span class="st">&quot;LGM&quot;</span>, </span>
+<span id="cb15-10"><a href="#cb15-10" tabindex="-1"></a>                         <span class="at">past_gcm =</span> <span class="fu">c</span>(<span class="st">&quot;CCSM4&quot;</span>, <span class="st">&quot;CNRM-CM5&quot;</span>, <span class="st">&quot;FGOALS-g2&quot;</span>, </span>
+<span id="cb15-11"><a href="#cb15-11" tabindex="-1"></a>                                      <span class="st">&quot;IPSL-CM5A-LR&quot;</span>, <span class="st">&quot;MIROC-ESM&quot;</span>, <span class="st">&quot;MPI-ESM-P&quot;</span>,</span>
+<span id="cb15-12"><a href="#cb15-12" tabindex="-1"></a>                                      <span class="st">&quot;MRI-CGCM3&quot;</span>), </span>
+<span id="cb15-13"><a href="#cb15-13" tabindex="-1"></a>                         <span class="at">future_dir =</span> <span class="cn">NULL</span>,  <span class="co"># NULL because we won&#39;t project to the Future</span></span>
+<span id="cb15-14"><a href="#cb15-14" tabindex="-1"></a>                         <span class="at">future_period =</span> <span class="cn">NULL</span>, </span>
+<span id="cb15-15"><a href="#cb15-15" tabindex="-1"></a>                         <span class="at">future_pscen =</span> <span class="cn">NULL</span>,  </span>
+<span id="cb15-16"><a href="#cb15-16" tabindex="-1"></a>                         <span class="at">future_gcm =</span> <span class="cn">NULL</span>)  </span></code></pre></div>
+<p><br></p>
+<p>When we print the <code>projection_data</code> object, it summarizes
+all scenarios we will predict to, and shows the root directory where the
+files are stored:</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a>pr</span>
+<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a><span class="co">#&gt; projection_data object summary</span></span>
+<span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a><span class="co">#&gt; ==============================</span></span>
+<span id="cb16-4"><a href="#cb16-4" tabindex="-1"></a><span class="co">#&gt; Variables prepared to project models for Present and Past </span></span>
+<span id="cb16-5"><a href="#cb16-5" tabindex="-1"></a><span class="co">#&gt; Past projections contain the following periods and GCMs:</span></span>
+<span id="cb16-6"><a href="#cb16-6" tabindex="-1"></a><span class="co">#&gt;   - Periods: LGM </span></span>
+<span id="cb16-7"><a href="#cb16-7" tabindex="-1"></a><span class="co">#&gt;   - GCMs: CCSM4 | CNRM-CM5 | FGOALS-g2 | IPSL-CM5A-LR | MIROC-ESM | MPI-ESM-P | MRI-CGCM3 </span></span>
+<span id="cb16-8"><a href="#cb16-8" tabindex="-1"></a><span class="co">#&gt; All variables are located in the following root directory:</span></span>
+<span id="cb16-9"><a href="#cb16-9" tabindex="-1"></a><span class="co">#&gt; Local/Temp/Projection_variables</span></span></code></pre></div>
+<p><br></p>
+</div>
+<div id="projecting-models" class="section level1">
+<h1>Projecting models</h1>
+<p>After preparing the data, we can use the
+<code>project_selected()</code> function to project selected models
+across the scenarios specified before. For a comprehensive explanation
+of this step, please see the <a href="model_projections.html">Project
+models to multiple scenarios</a> vignette.</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a><span class="co"># Create a folder to save projection results</span></span>
+<span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a><span class="co"># Here, in a temporary directory</span></span>
+<span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a>out_dir_projections <span class="ot">&lt;-</span> <span class="fu">file.path</span>(<span class="fu">tempdir</span>(), <span class="st">&quot;Projection_results/chelsa&quot;</span>)</span>
+<span id="cb17-4"><a href="#cb17-4" tabindex="-1"></a><span class="fu">dir.create</span>(out_dir_projections, <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb17-5"><a href="#cb17-5" tabindex="-1"></a></span>
+<span id="cb17-6"><a href="#cb17-6" tabindex="-1"></a><span class="co"># Project selected models to multiple scenarios</span></span>
+<span id="cb17-7"><a href="#cb17-7" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">project_selected</span>(<span class="at">models =</span> fitted_model_chelsa, </span>
+<span id="cb17-8"><a href="#cb17-8" tabindex="-1"></a>                      <span class="at">projection_data =</span> pr,</span>
+<span id="cb17-9"><a href="#cb17-9" tabindex="-1"></a>                      <span class="at">out_dir =</span> out_dir_projections, </span>
+<span id="cb17-10"><a href="#cb17-10" tabindex="-1"></a>                      <span class="at">write_replicates =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb17-11"><a href="#cb17-11" tabindex="-1"></a>                      <span class="at">progress_bar =</span> <span class="cn">FALSE</span>,  <span class="co"># Do not print progress bar</span></span>
+<span id="cb17-12"><a href="#cb17-12" tabindex="-1"></a>                      <span class="at">overwrite =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb17-13"><a href="#cb17-13" tabindex="-1"></a></span>
+<span id="cb17-14"><a href="#cb17-14" tabindex="-1"></a><span class="co"># Import mean of each projected scenario</span></span>
+<span id="cb17-15"><a href="#cb17-15" tabindex="-1"></a>p_mean <span class="ot">&lt;-</span> <span class="fu">import_results</span>(<span class="at">projection =</span> p, <span class="at">consensus =</span> <span class="st">&quot;mean&quot;</span>)</span>
+<span id="cb17-16"><a href="#cb17-16" tabindex="-1"></a></span>
+<span id="cb17-17"><a href="#cb17-17" tabindex="-1"></a><span class="co"># Plot all scenarios</span></span>
+<span id="cb17-18"><a href="#cb17-18" tabindex="-1"></a>terra<span class="sc">::</span><span class="fu">plot</span>(p_mean, <span class="at">cex.main =</span> <span class="fl">0.8</span>)</span></code></pre></div>
+<p><img role="img" src="data:image/png;base64,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" /><!-- --></p>
+<p><br></p>
+</div>
+<div id="detecting-changes-past-vs-present" class="section level1">
+<h1>Detecting changes: Past vs present</h1>
+<p>When projecting a model to different temporal scenarios (past or
+future), changes in suitable areas can be classified into three
+categories relative to the current baseline: <strong>gain</strong>,
+<strong>loss</strong> and <strong>stability</strong>. The interpretation
+of these categories depends on the temporal direction of the
+projection.</p>
+<p><strong>When projecting to future scenarios</strong>:</p>
+<ul>
+<li><em>Gain</em>: Areas currently unsuitable become suitable in the
+future.</li>
+<li><em>Loss</em>: Areas currently suitable become unsuitable in the
+future.</li>
+<li><em>Stability</em>: Areas remain the same in the future, suitable or
+unsuitable.</li>
+</ul>
+<p><strong>When projecting to past scenarios</strong>:</p>
+<ul>
+<li><em>Gain</em>: Areas unsuitable in the past are suitable in the
+present.</li>
+<li><em>Loss</em>: Areas suitable in the past are unsuitable in the
+present.</li>
+<li><em>Stability</em>: Areas remain the same in the present, suitable
+or unsuitable.</li>
+</ul>
+<p>These outcomes may vary across different General Circulation Models
+(GCMs) within each time scenario (e.g., various Shared Socioeconomic
+Pathways (SSPs) for the same period).</p>
+<p>The <code>projection_changes()</code> function summarizes the number
+of GCMs predicting gain, loss, and stability for each time scenario.</p>
+<p>By default, this function writes the summary results to disk (unless
+<code>write_results</code> is set to <code>FALSE</code>), but it does
+not save binary layers for individual GCMs. In the example below, we
+demonstrate how to configure the function to return the raster layers
+with changes and write the binary results to disk.</p>
+<p>Here, we present an example of detected changes from LGM to current
+conditions.</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a><span class="co"># Run function to detect changes</span></span>
+<span id="cb18-2"><a href="#cb18-2" tabindex="-1"></a>changes <span class="ot">&lt;-</span> <span class="fu">projection_changes</span>(<span class="at">model_projections =</span> p, <span class="at">consensus =</span> <span class="st">&quot;mean&quot;</span>,</span>
+<span id="cb18-3"><a href="#cb18-3" tabindex="-1"></a>                              <span class="at">output_dir =</span> out_dir_projections, </span>
+<span id="cb18-4"><a href="#cb18-4" tabindex="-1"></a>                              <span class="at">write_bin_models =</span> <span class="cn">TRUE</span>,  <span class="co"># Write individual binary results</span></span>
+<span id="cb18-5"><a href="#cb18-5" tabindex="-1"></a>                              <span class="at">return_raster =</span> <span class="cn">TRUE</span>, <span class="at">overwrite =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb18-6"><a href="#cb18-6" tabindex="-1"></a></span>
+<span id="cb18-7"><a href="#cb18-7" tabindex="-1"></a><span class="co"># Set colors</span></span>
+<span id="cb18-8"><a href="#cb18-8" tabindex="-1"></a>summary_with_colors <span class="ot">&lt;-</span> <span class="fu">colors_for_changes</span>(<span class="at">changes_projections =</span> changes)</span>
+<span id="cb18-9"><a href="#cb18-9" tabindex="-1"></a></span>
+<span id="cb18-10"><a href="#cb18-10" tabindex="-1"></a><span class="co"># Plot</span></span>
+<span id="cb18-11"><a href="#cb18-11" tabindex="-1"></a>terra<span class="sc">::</span><span class="fu">plot</span>(summary_with_colors<span class="sc">$</span>Summary_changes)</span></code></pre></div>
+<p><img role="img" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAqAAAAJACAMAAABlpiR1AAAAt1BMVEUAAAAAADoAAGYAOjoAOpAAZrYAcrI6AAA6ADo6AGY6OgA6OpA6ZmY6ZrY6kJA6kLY6kNtmAABmADpmAGZmOjpmOpBmZjpmZmZmkJBmtv+QOgCQOjqQOmaQkDqQtpCQ27aQ29uQ2/+f28u2ZgC2Zjq2kDq225C2/7a2/9u2//++vr6/59zVXgDaciDbkDrbtrbb/7bb///ghkDlmmDqroDvw5/017//tmb/25D/29v//7b//9v///+tQmrqAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAbVUlEQVR4nO2dDXvbxpVGadeq7LrbOlayXcn9WEW78aqp2VWShlyK//93LQcYkgANDYHh3HlnyHOexrIpAn157xFAgFfAbA1QMDN1AIAQCApFg6BQNAgKRYOgUDQICkWDoFA0CApFg6BQNAgKRYOgUDQICkWDoFA0CApFg6BQNAgKRYOgUDQICkWDoFA0CApFg6BQNAgKRYOgUDQICkWDoFA0CApFg6BQNAgKRYOgUDQICkWDoFA0CApFg6BQNAgKRYOgUDQICkWDoFA0ekFnYI66xyegz65PMMSvLeoYaSizxOPQZ9cnGAJBC0GfXZ9gCAQtBH12fYIhELQQ9Nn1CYZA0ELQZ9cnGAJBC0GfXZ9gCAQtBH12fYIhELQQ9NkFCX4N8K8hfunx8yD5X8Zo9E2OR58dQc3RNzkefXYENadT4uo+/9THRFBzuoL+fUu37s93G2Gvess83926L8t3jyP/T/rPnLz4SyAogq7XD1dOqauuTzGGnbj4IAiKoOvVx/t1IxOClpEAQfuCuo2nY/XN7NX9etHs7p/v/jSbfWgM2zz8uvXM/avx+C/ue+6Zm+fvHvx8bPETs4tAUHOO7uI3DjVvQVufbteLV/fPd2+eNn/dPOI2hvM3T+v1XtDrD+vF60e34V28edoJ+nhs8ROzi7BNEHJxhKBBJcfjV2P6SgMcFXTdOLp/D7pRr9lHP1xttWveBOwEfdtsN52LnQf37xBeWvzE7CIQ1Jwxgm5Ee3vfGLa8dnvuxrB5Y9jm327fve66uN15z24PBQ0sfmJ2EQhqzrHzoIvmPeLGqca1zeZxtwn80D9yOhC0XbQvaGjxE7OLQFBzjpXYvWFcuzeKzi5n60P7JnJ5vX0T6S1zO/X5Xsn22fsHjy1ukd0eBDXneIkfNlvUjaTPd7Nbd9L+j3e3/cPw7S56Ppv94Wa3BW2P4vcPHl3cJLs1CGqOvsnx6LMjqDn6Jsejz46g5uibHI8+u02CyWIeCDrdzJ+m8o8Wk5ffR9/kePTZEdQcfZPjyZ99ee0+VVvdbE88IKg5x86DHjsL9NX39w+4c/XuY/n2BP2V+9KcVF19c8Ln712yC+pOi7mTZwiqEXT3QicIesjevuX1rfvnh/ZkfzOx9/Z37gPQxW9OnmPygZOsZQKNmaubzwharaDz2e/9As93H/zy7efyzaelf3GPPfxHrYI+f3InbVffvkPQ4gTd7KXdKXV//n2x+wi9M2Hn+OfTboFdFxe7beq7H94/bbZAP+xP5KfKnolmr7B/QQhqz0hBm0m53RSd/+K/7yfs+gtsv9/92/Ld/2w2QQs3JtJZQ5LsIhDUnJGC+sE4P0Xnv/hv+Am7/gKtfg9uO9kR9HH+Yf1wux/HS5Y9E1ZH8dEu9pUcYeaXNPxjkETV6DFS0EXzafytn6LbflmvDwaY1p33BH7T+/G+s4t/XL7/35vH/Thesux56B3Fp/z1VwR9kZGnmTqjxd43/+VFQf1B0m6z287Qrz7+9f32beri1LNN53MUj6AvcqzE/fegfmhuOzu3Dgi6dm9NN5puDoXmm/+aGbvNtx7aOabOGuyyJ8fsKB5BX+SooG7o3UkVOoofFLTzG/XtL8u1Y3j+V+k4iu+CoC+iPxKOR58dQRE0gCb7onOZFQRF0AAIiqBFcwaCTjfT88sQJi5OENRCVwSVJkDQYyQet3MH/dvz7+c3bpc+AYIeoyvo7i1N9DSTv7hNu+T5jdulT4Cgx0gr6PYT0fV5jtulT4Cgxxgr6Mhxu/VukuQsx+2SJ0DQY4wUdPy43fZydYzbjQFBjzFS0PHjdvPXZzxulzwBgh5jpKCjx+3m2x33OY7bJUwQbaYndIb+VN+mu2jo6bQtqPtrcNxu/no/KnJ+43YJEyDo9BKHzoOOHLdz39gteX7jdgkTIGiiEk8bt3to9Pa77jMct0uXAEHNS6xHnx1BETSAPjuCImgAfXYERdAA+uwIiqAB9NkjEpxqZl/QPl5Qf3GF6Z4mUjKpp/omx6PPjqA5BU0xD9o9e8Q86BAIGl3i2e69TPS4Xff8O/OggyBodIkTCOrwn4gyDzoMgkaXOCjo+HnQzs1lW5gH7YKg0SUOCTp6HnR57b1jHnQYBI0ucUjQ8fOgu2kn5kEHQdDoEocEHX/5xe7tudfMg35FWiVDTDhtb6JkGk+TX37x4CCJedADEDRtiafNg7oHl+/bPTrzoIMgaNoST7z84nw268zUMw/6NQhqXuJi0GdHUAQNoM+OoAgaQJ8dQRE0gD47giJoAH32KQnSWDd8ly7/4OAC/TtwmQo65mehJarE3O3YNAGCnizo7vWeMs30cMZ3Oz4pAYIWIejOPsbtDkBQU0FHjts9//mHc77b8SkJENRS0LHjdvMPWzEZtzsAQS0FHTlut/ruqSco43Z7ENRS0JHjdg+3Z32345MSIGiGLaj7a2Dcrjmx5MVj3G5LtJm/9PC9GdF9/8yfQqQ1M5Ogp19+cd05OGLczoOgiQQdhLsdn5wAQS0FLRl9dgRF0AD67AiKoAH02REUQQPosyMoggbQZ0fQnIIOnmYqGX3MeEHHeDpeyRBpHYz2dPDnY1qJZ7vF4+dB3Vmp7SebzIO2IKhS0AMWV/slmQdtQdCCBH3YXeWOedAtCJpD0HHzoM+f7g8XZB4UQTMIOnIedPXxdzMuv3gAgmYQdOQ8qPvr6obLL/ZA0AyCcvnF+AQImkpQLr+YNsF0Jfv4M/Tj7VObORhj0Mx+xPgSc/nFUxIgaA5BufxidAIEzSBoyeizI+gQCOrRZ0fQIRDUo8+OoEMgqEefHUGHQFCPPvsoQScoGfK0f1ZUZt8IBgUN/UT5pxwrcYrLL7oj9+28yMWP2yFoYkF36zxhmunNkzvF2Sx58eN2CFqcoP5TJAfjdgiaU9Bx43YdnRm3Q9CMgo4ct1u8+e/tDAjjdgiaUdCR43aLzZZ00W4ZGbdD0IyCjhy32z5tv+Alj9shaGJBTx+3c1+8oJc8bjfezMFfYfcPHlz1c3A6VGPgEb4MEXpm/+WPKvGOiZdffNhfDfyCx+0QNKOg08bt3In67Z77csftEDSfoCWjz46gQyCoR58dQYdAUI8+O4IOgaAefXYEHQJBPfrsCDqElaBp7nbsH9w9bjh0V7Ogg2Ye9PTnAEUJOmhk0MyfArxY4tlu8fhxu91C+yETu6E7BEXQUwU1HbrTCNq5QBqCtpQg6Mi7Hben5PeCmg7dZRfU30lv/6v/CNpQgKBjr27nnvbqfi+o6dBd/i2oe6lsQb+iAEFHjts13/x4KKjV0J1iFz9/9Z8IekgBgo69up07Uu9uQU2H7iTvQZvxlyMJEFS1BXV/DY7bueuDdregpkN3HMVfmKCn3+3YPfjQ3YKaDt0p3oO6M7n+Er0DCX7tERI0aGYf/5yCBd3SDzwe/5r+3tIvadpxOzdh98e72+6JesOhu+yCujc57lCxEXTohlIIml3Qksl/msmZubr5zBZ0GATtk38L2hzAr759h6CDIGgfxXvQ5lPaF0/UIyiCdtBnR9AeCNpHk71zt0cE7WMsKHc7HgWCvoi1oN9v6dV9P9DZ0B9vOhh2cielbr9azujqi+UKGjIzJOiYtucz87fH6Sc8+FHqv+BfhhhUss9RQfcDncfxsyIHy1ldfbGAtycIKhd0P9A5ol+dK99kuPoigiJoz8zOrGf3eovdcdD1btIpw9UXERRBuwOdnVnP/QBo/1+OebtAhqsvIiiCdgc63b/8pFLn9saH46Bzr2qGqy8iKIJ2Bzr7s54dQbv3kp1vd9wZrr6IoJcm6NB50P1AZ3/Wc1jQ+W5Xn+Hqiwh6YYIOsxvo7M96Dgq6vcFHbzmzqy+WJKg3c7ALHt+2n4bIZ90E+0aYefAy+tr16f/sjjDzsMQvsh3o7M96Dgr60Gx+b/vLmV19EUERtGz02REUQQPosyMoggbQZ0dQBA2gz46gCBpAnx1Bcwr6wjzolHG77gPnOm43mABBcwj645bYcbuufZc1btcXNORiPYL6Z37p0c/tX+j2Z7Bv3yDxJX5B0Enjduv57Pe7+9Fc1LgdgqoEnTZu98/t55iXNm6HoCpBp47bbcW8sHE7BJUKOmHcrifo5YzbIah4Fz923G59sIu/lHE7BM0h6OnjdntBL2zcDkEzCDrMlHG7defg6JLH7RA0o6BTxu3W3aP3ixq360/l+vYNmhHqdxliHpg54ufr5/6Isv9pPdHMwxJXiD47giJoAH12BEXQAPrsCIqgAfTZERRBA+izI2hOQYfH7fYH452HDq5u8zX9741YIAYEvTBBdwm7nX9ozjBdde0a59vkBSaDoAjq797Vva8Mgg4k6J+h963N4Fs0I8z0+I+/x+jqq9AXNFWJXxDUbTwdq2/cmfX2lPvz3Z9m7SdC7uHtB0LtuXd/2n757vPRBU4GQeM5G0GbsQ7naGtXM3HnPrdsP1t3m0Z/OTs/QbcT9PHYAqeDoPGcj6DrxtH9e9CNiM0e++FqK2F7C8/OdUH3goYWOB0EjeesBPW/sPG4vZlx49u88c3dKNF/qN5O0B0IGlrgZBA0nrMRtJ05em6GRLY3M243iB/6R07+yX1Bjy2QLLsIBM0q6PA8qHvHuHnbuJ2Qe2jfUi6vt28pO1e2czda3ezp542nxxY4HQSNp0ZBX8Bdsq65OcLs1k/c9Q/KtztsP0E3n83+0EzNH13gZBA0njMStFz02Q8F9Y2SqjeOEYIOPiXoaf9EfeISV4g+O4IiaAB9dgRF0AD67AiKoAH02REUQQPosyMoggbQZ0dQBA2gz46gCBpAn70UQfuCDTo4vMTgcwa/5/Gv0L/evpG/JjXzsMQVos+OoAgaQJ8dQRE0gD47giJoAH12BEXQAPrsCIqgAfTZERRBA+izIyiCBtBnf0FQz5chLAW1xM8t+xf66yCmJa4QfXYERdAA+uwIiqAB9NkRFEED6LMjKIIG0GdHUAQNoM+OoAgaQJ8dQRE0gD77oaB9Bu/nlVbXDGaOEDRLiStEnx1BETSAPjuCImgAfXYERdAA+uwIiqAB9NkRFEED6LMjKIIG0GffJei7OHgC1OQ8aHZB/QvNYOZhiStEnx1B85W4QvTZETRfiStEnx1B85W4QvTZETRfiStEnx1B85W4QvTZETRfiStEnx1B85W4QvTZdwn6ZqaVUKVkH//S+ifqc5a4QvTZETRfiSskf/bl2/vFrHPDewQ1B0En8Pzpfvn+ae3+O0iAoFYg6ARWN4/Lf2u+HCZAUCsQdAr/db/ZiK6dpAcJENQKBJ2Cu3tzc+/nwwQIagWCJkmAoOYlrhDBUfz17Cr0HvQczfT4V2hxK6QgCDqB57vb9eL1Yyuo29kjqDkIOoHGzNXNZ7agCDoGxXnQzZ+rb98hKIKOQPEe9Hbz5+I1giLoCPTZETRfiStEk31xNZAAQa1A0KkgKIKOpCBBz9hMn8KfoUfQCeizI2i+EleIPjuC5itxheizI2i+EleIPjuC5itxheizI2i+EleIPjuC5itxheizI2i+EleIPvtZCyo287DEFaLPjqD5Slwh+uwImq/EFaLPjqD5Slwh+uwImq/EFaLPjqD5Slwh+uwImq/EFaLPjqD5Slwh+uxnLagfUUbQaPTZETRfiStEnx1B85W4QvTZETRfiStEnx1B85W4QvTZETRfiStEnx1B85W4QvTZETRfiStEn/2sBf2lx796CEpcIfrsCJqvxBWiz46g+UpcIfrsCJqvxBWiz46g+UpcIfrsCJqvxBWiz46g+UpcIfrsCJqvxBWiz55F0Aye/tjj+5aQoPk81Tc5Hn12BM1X4grRZ0fQfCWuEH12BM1X4grRZ0fQfCWuEH12BM1X4grRZ0fQfCWuEH12BM1X4grRZ88pqKWufjbZm9mfVBafr9c3OR59dgTNV+IK0WdH0HwlrhB9dgTNV+IK0WdH0HwlrhB9dgTNV+IK0WdH0HwlrhB9dgTNV+IK0WfXCZpI1y8t3w8xeNoeQSegz46g+UpcIfrsCJqvxBWiz46g+UpcIfrsCJqvxBWiz46g+UpcIfrsCJqvxBWiz46g+UpcIfrs1Qvq+fE4g5ezzVniCtFnR9B8Ja4QfXYEzVfiCtFnR9B8Ja4QfXYEzVfiCtFnR9B8Ja4QfXYEzVfiCtFnR9B8Ja4QffZzEXS8wwg6AX12BM1X4grRZ0fQfCWuEH12BM1X4grRZ0fQfCWuEH12BM1X4grRZ0fQfCWuEH12uaAZzOzjB0i9pzlLXCH67Aiar8QVos+OoPlKXCH67Aiar8QVos+OoPlKXCH67Aiar8QVos+OoPlKXCH67Aiar8QVos9+eYL68/WCEleIPjuC5itxheTPvrx+9bdvZq8fv0qAoFYg6ASe//y4+ni/Xn33dJgAQa1A0Amsbh43/3NfDhMgqBUIOgG/BV2+ZwuaDQSdwmLGe1AEHY0+O4LmK3GFKI7iZ1dr7XvQ7Ep+6eF/PT5fyRF0As93t+vF68dW0Jlj+x0EtQJBJ9CYubr5zBY0X80RdALPn+43f66+fYeg2UDQKSyvbzd/Ll4jaDYQNEkCBDUvcYVosi+uBhIgqBUIOhUERdCRXJagKjN/7pFvUvmwxBWiz46g+UpcIfrsCJqvxBWiz46g+UpcIfrsCJqvxBWiz46g+UpcIfrsCJqvxBWiz46g+UpcIfrsWQTNbqanr2R2Mw9LXCH67Aiar8QVos+OoPlKXCH67Aiar8QVos+OoPlKXCH67Aiar8QVos+OoPlKXCH67Aiar8QVos9+noL6M/S/DKErcYXosyNovhJXiD47guYrcYXosyNovhJXiD47guYrcYXosyNovhJXiD47guYrcYXosyNovhJXiD77YYJKjdzir8pQhpkefZPj0WdHUHP0TY5Hnx1BzdE3OR59dgQ1R9/kePTZEdQcfZPj0WdHUHP0TY5Hnx1BzdE3OR59dgQ1R9/kePTZEwtalpmSin6Fvsnx6LMjqDn6Jsejz46g5uibHI8+O4Kao29yPPrsCGqOvsnx6LMjqDn6Jsejz46g5uibHI8+O4Kao29yPPrsOkHTKq26Ou0I9E2OR58dQc3RNzkefXYENUff5Hj02RHUHH2T49FnR1Bz9E2OR58dQc3RNzkefXYENUff5Hj02RHUHH2T49FnTyXoBCXTmunXVqKZHn2T49FnR1Bz9E2OR58dQc3RNzkefXYENUff5Hj02RHUHH2T49FnR1Bz9E2OR58dQc3RNzkefXYENUff5Hj02bMIOmKJaHn716qV1PAI+ibHo8+OoObomxyPPjuCmqNvcjz67Ahqjr7J8eizI6g5+ibHo8+OoObomxyPPjuCmqNvcjz67Ahqjr7J8eiznyxoyMEDvEuxKx223l+xQVK8ceibHI8+O4Kao29yPPrsCGqOvsnx6LMjqDn6Jsejz46g5uibHI8+O4Kao29yPPrsCGqOvsnx6LMjqDn6Jsejz25zI69hvvToP+gvvOB18w/+1OPA0/LN9OibHI8+O4Kao29yPPrsCGqOvsnx6LMjqDn6Jsejz46g5uibHI8+O4Kao29yPPrsCGqOvsnx6LO/kCCfp30X+54G8U/NW64Y9E2OR58dQc3RNzme/NkXM8er+yMJEDQdCDqB57tb92X5/imcAEHTgaATWN08dr68nABB04GgE9huQd8haDYQdArLa96DZgZBDRIgaDr0TY5HcRT/6q/Xs9fbPbxC0PHWDsr7czVmehB0As+f7pfXt/4ovjnjNPw8BE0Hgk5gc/j+/OdH7VE8gtaD6ih+9Z3wPCiC1oPgKP7t5gB+IT2KR9B60GdHUHP0TY5Hk31xdTQBgqYDQaeCoFlB0KmMENST3dMRuhoXJz0IapcAQROgb3I8+uwIao6+yfHosyOoOfomx6PPjqDm6Jscjz47gpqjb3I8+uwIao6+yfHosyOoOfomx6PPbiPob8eDoCWjz46g5uibHI8+O4Kao29yPPrsCGqOvsnx6LMjqDn6Jsejz46g5uibHI8+O4Kao29yPPrsCGqOvsnx6LOPShBSaoKL4wUd9NS6FFbomxyPPjuCmqNvcjz67Ahqjr7J8eizI6g5+ibHo8+OoObomxyPPjuCmqNvcjz67Ahqjr7J8eizI6g5+ibHo88+JcGpLo43cxCzGhijb3I8+uwIao6+yfHosyOoOfomx6PPjqDm6Jscjz47gpqjb3I8+uwIao6+yfHosyOoOfomx6PPjqDm6Jscjz57RALMnIa+yfHosyOoOfomx6PPjqDm6Jscjz47gpqjb3I8+uwIao6+yfHosyOoOfomx6PPjqDm6Jscjz47gpqjb3I8+uzxCTBzJPomx6PPjqDm6Jscjz47gpqjb3I8+uwIao6+yfHosyOoOfomx6PPjqDm6Jscjz47gpqjb3I8+uwIao6+yfHos6dKkFbQRKHKQN/kePTZEdQcfZPj0WdHUHP0TY5Hnx1BzdE3OR59dgQ1R9/kePTZEdQcfZPj0WdHUHP0TY5Hnx1BzdE3OR59dpsE0YKapBGjb3I8+uwIao6+yfHosyOoOfomx6PPjqDm6Jscjz47gpqjb3I8+uwIao6+yfHosyOoOfomx6PPjqDm6Jscjz57zgQXo2QffZPj0WdHUHP0TY5Hnx1BzdE3OR59dgQ1R9/kePTZEdQcfZPj0WdHUHP0TY5Hnx1BzdE3OR59dgQ1R9/kePTZ9QnOnppLrM+uT3D21FxifXZ9grOn5hLrs+sTnD01l1ifXZ/g7Km5xPrs+gRnT80l1mefgTnqHp9AwdlNol34Suuj4DLU0/Z6VlofBZehnrbXs9L6KLgM9bS9npXWR8FlqKft9ay0PigDFA2CQtEgKBQNgkLRICgUDYJC0SAoFE2pgj7MZq8fN1/nH1Kv9PluNrtKvdL1Yja7TbjS9oXP0yatkkIFff5033xdXicUtF3p/Gr9fJdOpnalq4/3y3ePyVbavvDl+6eUSeukUEE3vXFfnj/9e0JB/UrXSbfL7UqdS/5nKgnNC0+90iopVNDFb67d3m3+IeUu3q90s727Sbexa1e62Kz3IeHGrn3hy+tXl+5nqYKu/+9pPb/dbEKSvgdtVtrsj1OvNLGg7QtfvGEXX6KgD/7QYLMVcdPgaQzdr3S9fJvKz/1KE+6N3UrbF+5+OBeXfpRUoKAO1xe3sUt6FN+uNO3BjF9p8oOkdbsFXT+k3IPUSKGCuu1I05rUp5k+uD9SbZb3K7U5zfTAaaZiBQVoQFAoGgSFokFQKBoEhaJBUCgaBIWiQVAoGgSFokFQKBoEhaJBUCgaBIWiQVAoGgSFokFQKBoEhaJBUCia/wdHpcsrrEvphAAAAABJRU5ErkJggg==" /><!-- --></p>
+<p><br></p>
+<p>In this example, we can see that the species has lost a lot of its
+suitable area when comparing LGM to present-day conditions. This is
+supported by the high agreement among GCMs.</p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
