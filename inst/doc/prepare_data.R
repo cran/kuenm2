@@ -300,6 +300,11 @@ head(d_pca_extern$formula_grid)
 ## ----import enmeval_block, echo=FALSE-----------------------------------------
 data(enmeval_block, package = "kuenm2")
 
+# Get calib_occ and calib_bg
+calib_occ <- d$data_xy[d$calibration_data$pr_bg == 1, ]  # Presences
+calib_bg <- d$data_xy[d$calibration_data$pr_bg == 0, ]  # Background
+
+
 ## ----spatial block enmeval, eval=FALSE----------------------------------------
 # # Install ENMeval if not already installed
 # if(!require("ENMeval")){
@@ -324,39 +329,12 @@ data(enmeval_block, package = "kuenm2")
 str(d$part_data)
 
 ## ----transform enmeval_block--------------------------------------------------
-# Identify unique spatial blocks
-id_blocks <- sort(unique(unlist(enmeval_block)))
-
-# Create a list of test indices for each spatial block
-new_part_data <- lapply(id_blocks, function(i) {
-  # Indices of occurrence records in group i
-  rep_i_presence <- which(enmeval_block$occs.grp == i)
-  
-  # Indices of background records in group i
-  rep_i_bg <- which(enmeval_block$bg.grp == i)
-  
-  # To get the right indices for background, 
-  # we need to sum the total number of records to background indices
-  rep_i_bg <- rep_i_bg + nrow(occ_data)
-  
-  # Combine presence and background indices for the test set
-  c(rep_i_presence, rep_i_bg)
-})
-
-# Assign names to each partition
-names(new_part_data) <- paste0("Partition_", id_blocks)
-
-# Inspect the structure of the new partitioned data
-str(new_part_data)
-
-## ----replace part_data--------------------------------------------------------
-# Replace the original partition data with the new spatial blocks
-d_spatial_block <- d
-d_spatial_block$part_data <- new_part_data
-
-# Update the partitioning method to reflect the new approach
-d_spatial_block$partition_method <- "Spatial block (ENMeval)"  # Any name works
-
+# Replace the existing partitions
+d_spatial_block <- replace_partition(data = sp_swd,
+                                     new_block = enmeval_block,
+                                     block_source = "ENMeval",
+                                     enmeval_occs = calib_occ,
+                                     enmeval_bg = calib_bg)
 # Print the updated prepared_data object
 print(d_spatial_block)
 
@@ -425,27 +403,10 @@ data(flexsdm_block, package = "kuenm2")
 # #>  $ .part: int  3 1 3 2 3 3 1 4 4 3 ...
 
 ## ----transform flexsdm_block--------------------------------------------------
-# Identify unique spatial blocks from flexsdm output
-id_blocks <- sort(unique(flexsdm_block$part$.part))
-
-# Create a list of test indices for each spatial block
-new_part_data_flexsdm <- lapply(id_blocks, function(i) {
-  # Indices of occurrences and background points in group i
-  which(flexsdm_block$part$.part == i)
-})
-
-# Assign names to each partition partition
-names(new_part_data_flexsdm) <- paste0("Partition_", id_blocks)
-
-# Inspect the structure of the new partitioned data
-str(new_part_data_flexsdm)
-
-# Replace the partition data in the prepared_data object
-d_block_flexsdm <- d
-d_block_flexsdm$part_data <- new_part_data_flexsdm
-
-# Update the partition method description
-d_block_flexsdm$partition_method <- "Spatial block (flexsdm)"  # any name works
+# Update the partition
+d_block_flexsdm <- replace_partition(data = sp_swd,
+                                     new_block = flexsdm_block,
+                                     block_source = "flexsdm")
 
 # Display the updated prepared_data object
 print(d_block_flexsdm)
